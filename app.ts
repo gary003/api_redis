@@ -1,35 +1,26 @@
+require("dotenv").config()
+
 import express, { Response, Request, Express } from "express"
 import get, { AxiosResponse } from "axios"
-import { createClient } from "redis"
+import { getValueFromKey, setKeyValue } from "./servicesData/redis"
 
 const API_PORT: number = 8080
-// const REDIS_PORT = 6379
-
-const client = createClient()
 
 const app: Express = express()
 
 // Cache middleware
 const cacheMiddleware = async (req: Request, res: Response, next: any) => {
-  await client.connect()
-
   const { username } = req.params
 
-  const numRepo: number = (await client.get(username).catch((err) => console.log(err))) as unknown as number
+  const numRepos = await getValueFromKey(username).catch(console.log)
 
-  // console.log({ numRepo, username })
+  if (!numRepos) return next()
 
-  await client.disconnect()
-
-  if (!numRepo) return next()
-
-  return res.status(200).send(`<h2>Redis: ${username} has ${numRepo} repositories.</h2>`)
+  return res.status(200).send(`<h2>Redis: ${username} has ${numRepos} repositories.</h2>`)
 }
 
 app.get("/repos/:username", cacheMiddleware, async (req: Request, res: Response) => {
   console.log("fetching data ...")
-
-  await client.connect()
 
   const { username } = req.params
 
@@ -41,13 +32,11 @@ app.get("/repos/:username", cacheMiddleware, async (req: Request, res: Response)
     return res.status(500).send(error)
   }
 
-  console.log(response.data, { username })
+  // console.log(response.data, { username })
 
   const reposCount: number = response.data.public_repos as unknown as number
 
-  await client.set(username, reposCount)
-
-  await client.disconnect()
+  await setKeyValue(username, reposCount).catch(console.log)
 
   return res.status(200).send(`<h2>Github: ${username} has ${reposCount} repositories.</h2>`)
 })
