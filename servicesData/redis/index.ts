@@ -1,7 +1,7 @@
 require("dotenv").config()
 import { createClient } from "redis"
 
-export const connectToRedis = async () => {
+export const connectToRedis = () => {
   const REDIS_HOST: string = process.env.REDIS_HOST || "127.0.0.1"
   const REDIS_PORT: number = Number(process.env.REDIS_PORT) || 6379
 
@@ -19,7 +19,7 @@ export const connectToRedis = async () => {
 }
 
 export const getValueFromKey = async (key: string): Promise<number> => {
-  const client = await connectToRedis()
+  const client = connectToRedis()
 
   await client.connect()
 
@@ -33,7 +33,7 @@ export const getValueFromKey = async (key: string): Promise<number> => {
 }
 
 export const setKeyValue = async (key: string, value: number) => {
-  const client = await connectToRedis()
+  const client = connectToRedis()
 
   await client.connect()
 
