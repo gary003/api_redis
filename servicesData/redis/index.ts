@@ -29,7 +29,7 @@ export const getValueFromKey = async (key: string): Promise<number> => {
 
   await client.disconnect()
 
-  return numRepo as number
+  return numRepo
 }
 
 export const setKeyValue = async (key: string, value: number) => {

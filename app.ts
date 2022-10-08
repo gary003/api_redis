@@ -13,19 +13,22 @@ const app: Express = express()
 app.use("/repos/:username", cacheMiddleware)
 
 app.get("/repos/:username", async (req: Request, res: Response) => {
-  console.log("fetching data ...")
-
   const { username } = req.params
 
-  const reposCount = await getNumReposFromUsername(username)
+  const reposCount = await getNumReposFromUsername(username).catch((err) => err)
+
+  // console.log(reposCount, { username })
+
+  if (reposCount.isAxiosError) {
+    const error: Error = new Error("Impossible to found the user")
+    return res.status(404).send(error)
+  }
 
   if (!reposCount) {
     const error: Error = new Error("Impossible to get a valid response from api")
-    console.log(error)
+    console.log("!!!!" + error)
     return res.status(500).send(error)
   }
-
-  // console.log(response.data, { username })
 
   await setKeyValue(username, reposCount).catch(console.log)
 
