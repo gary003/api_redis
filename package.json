@@ -7,10 +7,11 @@
     "start": "./node_modules/pm2/bin/pm2 start ./dist/app.js -i 0",
     "start-docker": "./node_modules/pm2/bin/pm2-runtime start ./dist/app.js -i 0",
     "dev": "./node_modules/nodemon/bin/nodemon.js ./app.ts",
+    "dev-pm2": "./node_modules/pm2/bin/pm2 start ./dist/app.js --name app-dev --watch",
     "build": "./node_modules/typescript/bin/tsc -p ."
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Gary Johnson",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.24.0",
     "dotenv": "^16.0.2",
